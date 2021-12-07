@@ -29,8 +29,7 @@ PhoenixChannel? joinConversationAndListen({
           socket.removeChannel(conversation!);
           conversation = null;
         } else {
-          if (event.event.toString().contains("shout") ||
-              event.event.toString().contains("message:created")) {
+          if (event.event.value.contains("shout") || event.event.value.contains("message:created")) {
             // https://github.com/papercups-io/papercups/pull/488
             // "message:created" is still not implemented see the PR above.
             if (event.payload!["customer"] == null)
@@ -94,6 +93,8 @@ PhoenixChannel? joinConversationAndListen({
                   ),
                 );
               }, animate: true);
+          }
+            }
           }
         }
       }
