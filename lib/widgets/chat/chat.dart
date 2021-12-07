@@ -36,14 +36,12 @@ class ChatMessages extends StatelessWidget {
         alignment: Alignment.topCenter,
         child: NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (OverscrollIndicatorNotification overscroll) {
-            overscroll.disallowIndicator();
+            overscroll.disallowGlow();
             return false;
           },
           child: ListView.builder(
             controller: _controller,
-            physics: props.scrollEnabled
-                ? ClampingScrollPhysics()
-                : NeverScrollableScrollPhysics(),
+            physics: props.scrollEnabled ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(),
             padding: EdgeInsets.zero,
             itemCount: messages!.length,
             itemBuilder: (context, index) {
