@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import '../../papercups_flutter.dart';
 
 import '../../models/models.dart';
 import '../utils.dart';
@@ -34,12 +33,8 @@ Future<PapercupsCustomer?> updateUserMetadata(
       externalId: data["external_id"],
       firstSeen: data["first_seen"] != null ? parseDateFromUTC(data["first_seen"]) : null,
       id: data["id"],
-      lastSeenAt: data["last_seen_at"] != null
-          ? parseDateFromUTC(data["last_seen_at"])
-          : null,
-      updatedAt: data["updated_at"] != null
-          ? parseDateFromUTC(data["updated_at"])
-          : null,
+      lastSeenAt: data["last_seen_at"] != null ? parseDateFromUTC(data["last_seen_at"]) : null,
+      updatedAt: data["updated_at"] != null ? parseDateFromUTC(data["updated_at"]) : null,
       name: data["name"],
       phone: data["phone"],
     );

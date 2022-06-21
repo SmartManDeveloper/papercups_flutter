@@ -23,7 +23,6 @@
 // SOFTWARE.
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'dart:async';
 
 class Alert {
@@ -42,8 +41,8 @@ class Alert {
       bool? rootNavigator,
       Border? border}) {
     ToastView.dismiss();
-    ToastView.createView(msg, context, duration, gravity, backgroundColor,
-        textStyle, backgroundRadius, border, rootNavigator);
+    ToastView.createView(
+        msg, context, duration, gravity, backgroundColor, textStyle, backgroundRadius, border, rootNavigator);
   }
 }
 
@@ -60,22 +59,13 @@ class ToastView {
   static OverlayEntry? _overlayEntry;
   static bool _isVisible = false;
 
-  static void createView(
-      String msg,
-      BuildContext context,
-      int? duration,
-      int gravity,
-      Color background,
-      TextStyle? textStyle,
-      double backgroundRadius,
-      Border? border,
-      bool? rootNavigator) async {
+  static void createView(String msg, BuildContext context, int? duration, int gravity, Color background,
+      TextStyle? textStyle, double backgroundRadius, Border? border, bool? rootNavigator) async {
     overlayState = Overlay.of(context, rootOverlay: rootNavigator ?? false);
 
     _overlayEntry = new OverlayEntry(
       builder: (BuildContext context) => ToastWidget(
-          duration: Duration(
-              seconds: duration == null ? Alert.lengthShort : duration),
+          duration: Duration(seconds: duration == null ? Alert.lengthShort : duration),
           widget: Container(
             width: MediaQuery.of(context).size.width,
             child: Container(
@@ -96,8 +86,7 @@ class ToastView {
     );
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
-    await new Future.delayed(
-        Duration(seconds: duration == null ? Alert.lengthShort : duration));
+    await new Future.delayed(Duration(seconds: duration == null ? Alert.lengthShort : duration));
     dismiss();
   }
 
@@ -151,12 +140,8 @@ class _ToastWidgetState extends State<ToastWidget> {
       });
     }
     return Positioned(
-      top: widget.gravity == 2
-          ? MediaQuery.of(context).viewInsets.top + 50
-          : null,
-      bottom: widget.gravity == 0
-          ? MediaQuery.of(context).viewInsets.bottom + 50
-          : null,
+      top: widget.gravity == 2 ? MediaQuery.of(context).viewInsets.top + 50 : null,
+      bottom: widget.gravity == 0 ? MediaQuery.of(context).viewInsets.bottom + 50 : null,
       child: AnimatedOpacity(
         opacity: opacity,
         curve: Curves.linear,

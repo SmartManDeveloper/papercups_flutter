@@ -1,14 +1,10 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:papercups_flutter/models/attachment.dart';
 import 'package:papercups_flutter/utils/fileInteraction/uploadFile.dart';
 import 'package:papercups_flutter/widgets/alert.dart';
 
-Future<void> webFilePicker(
-    {required BuildContext context,
-    required Function onUploadSuccess,
-    required widget}) async {
+Future<void> webFilePicker({required BuildContext context, required Function onUploadSuccess, required widget}) async {
   try {
     var picked = await FilePicker.platform.pickFiles();
 

@@ -81,9 +81,7 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
   @override
   void didChangeDependencies() {
     if (widget.props.greeting != null &&
-        _conversation.messages
-                .indexWhere((element) => element.id == "greeting") ==
-            -1) {
+        _conversation.messages.indexWhere((element) => element.id == "greeting") == -1) {
       _conversation.messages.add(
         PapercupsMessage(
           body: widget.props.greeting,
@@ -99,9 +97,7 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
       );
     }
     if (_socket == null) {
-      _socket =
-          PhoenixSocket("wss://" + widget.props.baseUrl + '/socket/websocket')
-            ..connect();
+      _socket = PhoenixSocket("wss://" + widget.props.baseUrl + '/socket/websocket')..connect();
       _subscribeToSocket();
     }
     if (widget.props.customer != null &&
@@ -135,18 +131,13 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
         }
       });
     }
-    if ((widget.props.primaryColor != null &&
-            widget.props.primaryColor!.computeLuminance() > 0.5) ||
-        (widget.props.primaryGradient != null &&
-            widget.props.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
-        (widget.props.primaryColor == null &&
-            Theme.of(context).primaryColor.computeLuminance() > 0.5))
+    if ((widget.props.primaryColor != null && widget.props.primaryColor!.computeLuminance() > 0.5) ||
+        (widget.props.primaryGradient != null && widget.props.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
+        (widget.props.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5))
       textColor = Colors.black;
-    if (widget.props.baseUrl.contains("http"))
-      throw "Do not provide a protocol in baseURL";
+    if (widget.props.baseUrl.contains("http")) throw "Do not provide a protocol in baseURL";
     if (widget.props.baseUrl.endsWith("/")) throw "Do not provide a trailing /";
-    if (widget.props.primaryGradient != null &&
-        widget.props.primaryColor != null)
+    if (widget.props.primaryGradient != null && widget.props.primaryColor != null)
       throw "Expected either primaryColor or primaryGradient to be null";
     if (widget.props.customer != null) {
       setCustomer(PapercupsCustomer(
@@ -167,17 +158,10 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
   void didUpdateWidget(PaperCupsWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.props.primaryColor != widget.props.primaryColor) {
-      if ((widget.props.primaryColor != null &&
-              widget.props.primaryColor!.computeLuminance() > 0.5) ||
-          (widget.props.primaryGradient != null &&
-              widget.props.primaryGradient!.colors[0].computeLuminance() >
-                  0.5) ||
-          (widget.props.primaryColor == null &&
-              Theme.of(context).primaryColor.computeLuminance() > 0.5)) {
+      if ((widget.props.primaryColor != null && widget.props.primaryColor!.computeLuminance() > 0.5) ||
+          (widget.props.primaryGradient != null && widget.props.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
+          (widget.props.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5)) {
         textColor = Colors.black;
-        if (widget.props.titleStyle == null)
-          widget.props.titleStyle =
-              widget.props.titleStyle.copyWith(color: Colors.black);
       } else {
         textColor = Colors.white;
       }
@@ -202,12 +186,8 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
   void rebuild(void Function() fn, {bool stateMsg = false, animate = false}) {
     _sending = stateMsg;
     if (mounted) setState(fn);
-    if (animate &&
-        mounted &&
-        _conversation.messages.isNotEmpty &&
-        WidgetsBinding.instance != null &&
-        _controller.hasClients) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+    if (animate && mounted && _conversation.messages.isNotEmpty && _controller.hasClients) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _controller.animateTo(
           _controller.position.maxScrollExtent,
           curve: Curves.easeIn,
@@ -227,8 +207,7 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
       _canJoinConversation,
       rebuild,
     );
-    if (widget.props.primaryColor == null &&
-        widget.props.primaryGradient == null)
+    if (widget.props.primaryColor == null && widget.props.primaryGradient == null)
       widget.props.primaryColor = Theme.of(context).primaryColor;
     return Container(
       color: Theme.of(context).canvasColor,
@@ -252,10 +231,7 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
                     onPressed: () {
                       if (!_socket!.isConnected) {
                         _socket!.dispose();
-                        _socket = PhoenixSocket("wss://" +
-                            widget.props.baseUrl +
-                            '/socket/websocket')
-                          ..connect();
+                        _socket = PhoenixSocket("wss://" + widget.props.baseUrl + '/socket/websocket')..connect();
                         _subscribeToSocket();
                       }
                       if (widget.props.customer != null &&
@@ -320,24 +296,18 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
                         )
                       : null,
                   decoration: widget.floatingSendMessage
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                              BoxShadow(
-                                blurRadius: 10,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.light
-                                    ? Colors.grey.withOpacity(0.4)
-                                    : Colors.black.withOpacity(0.8),
-                              )
-                            ])
+                      ? BoxDecoration(borderRadius: BorderRadius.circular(10), boxShadow: [
+                          BoxShadow(
+                            blurRadius: 10,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? Colors.grey.withOpacity(0.4)
+                                : Colors.black.withOpacity(0.8),
+                          )
+                        ])
                       : BoxDecoration(),
-                  clipBehavior:
-                      widget.floatingSendMessage ? Clip.antiAlias : Clip.none,
-                  child: (widget.props.requireEmailUpfront &&
-                          (_customer == null || _customer!.email == null))
-                      ? RequireEmailUpfront(setCustomer, widget.props,
-                          textColor, !widget.floatingSendMessage)
+                  clipBehavior: widget.floatingSendMessage ? Clip.antiAlias : Clip.none,
+                  child: (widget.props.requireEmailUpfront && (_customer == null || _customer!.email == null))
+                      ? RequireEmailUpfront(setCustomer, widget.props, textColor, !widget.floatingSendMessage)
                       : SendMessage(
                           props: widget.props,
                           customer: _customer,
