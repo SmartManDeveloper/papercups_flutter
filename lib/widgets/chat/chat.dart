@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
-import 'chatMessage.dart';
+import 'chat_message.dart';
 
 class ChatMessages extends StatelessWidget {
-  final Props props;
+  final PapercupsProps props;
   final List<PapercupsMessage>? messages;
   final bool sending;
   final ScrollController _controller;
   final String locale;
+  // ignore: prefer_typing_uninitialized_variables
   final timeagoLocale;
   final String sendingText;
   final String sentText;
   final Color textColor;
   final void Function(PapercupsMessage)? onMessageBubbleTap;
 
-  ChatMessages(
+  const ChatMessages(
     this.props,
     this.messages,
     this._controller,
@@ -40,7 +41,7 @@ class ChatMessages extends StatelessWidget {
           },
           child: ListView.builder(
             controller: _controller,
-            physics: props.scrollEnabled ? ClampingScrollPhysics() : NeverScrollableScrollPhysics(),
+            physics: props.scrollEnabled ? const ClampingScrollPhysics() : const NeverScrollableScrollPhysics(),
             padding: EdgeInsets.zero,
             itemCount: messages!.length,
             itemBuilder: (context, index) {
@@ -55,6 +56,7 @@ class ChatMessages extends StatelessWidget {
                 sendingText: sendingText,
                 sentText: sentText,
                 textColor: textColor,
+                onMessageBubbleTap: onMessageBubbleTap,
               );
             },
           ),

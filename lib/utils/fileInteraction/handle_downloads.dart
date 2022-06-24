@@ -1,25 +1,28 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:open_file/open_file.dart';
 import 'package:papercups_flutter/models/models.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_io/io.dart';
 
-Future<void> handleDownloadStream(Stream<StreamedResponse> resp,
-    {required File file,
-    Function? onDownloading,
-    Function? onDownloaded}) async {
+Future<void> handleDownloadStream(
+  Stream<StreamedResponse> resp, {
+  required File file,
+  Function? onDownloading,
+  Function? onDownloaded,
+}) async {
   List<List<int>> chunks = [];
 
-  if (onDownloading != null) {
-    onDownloading();
-  }
+  onDownloading?.call();
 
   resp.listen((StreamedResponse r) {
     r.stream.listen((List<int> chunk) {
       if (r.contentLength == null) {
-        print("Error");
+        if (kDebugMode) {
+          print("Error");
+        }
       }
 
       chunks.add(chunk);

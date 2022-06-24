@@ -26,11 +26,11 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class Alert {
-  static final int lengthShort = 1;
-  static final int lengthLong = 3;
-  static final int bottom = 0;
-  static final int center = 1;
-  static final int top = 2;
+  static const int lengthShort = 1;
+  static const int lengthLong = 3;
+  static const int bottom = 0;
+  static const int center = 1;
+  static const int top = 2;
 
   static void show(String msg, BuildContext context,
       {int duration = 1,
@@ -47,7 +47,7 @@ class Alert {
 }
 
 class ToastView {
-  static final ToastView _singleton = new ToastView._internal();
+  static final ToastView _singleton = ToastView._internal();
 
   factory ToastView() {
     return _singleton;
@@ -63,10 +63,10 @@ class ToastView {
       TextStyle? textStyle, double backgroundRadius, Border? border, bool? rootNavigator) async {
     overlayState = Overlay.of(context, rootOverlay: rootNavigator ?? false);
 
-    _overlayEntry = new OverlayEntry(
+    _overlayEntry = OverlayEntry(
       builder: (BuildContext context) => ToastWidget(
-          duration: Duration(seconds: duration == null ? Alert.lengthShort : duration),
-          widget: Container(
+          duration: Duration(seconds: duration ?? Alert.lengthShort),
+          widget: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Container(
                 alignment: Alignment.center,
@@ -77,8 +77,8 @@ class ToastView {
                     borderRadius: BorderRadius.circular(backgroundRadius),
                     border: border,
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  padding: EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
                   child: Text(msg, softWrap: true, style: textStyle),
                 )),
           ),
@@ -86,7 +86,7 @@ class ToastView {
     );
     _isVisible = true;
     overlayState!.insert(_overlayEntry!);
-    await new Future.delayed(Duration(seconds: duration == null ? Alert.lengthShort : duration));
+    await Future.delayed(Duration(seconds: duration ?? Alert.lengthShort));
     dismiss();
   }
 
@@ -100,7 +100,7 @@ class ToastView {
 }
 
 class ToastWidget extends StatefulWidget {
-  ToastWidget({
+  const ToastWidget({
     Key? key,
     required this.widget,
     required this.gravity,
@@ -112,7 +112,7 @@ class ToastWidget extends StatefulWidget {
   final Duration duration;
 
   @override
-  _ToastWidgetState createState() => _ToastWidgetState();
+  State<ToastWidget> createState() => _ToastWidgetState();
 }
 
 class _ToastWidgetState extends State<ToastWidget> {
@@ -123,20 +123,22 @@ class _ToastWidgetState extends State<ToastWidget> {
   Widget build(BuildContext context) {
     if (opacity == 0) {
       Timer(
-          Duration(
+          const Duration(
             milliseconds: 0,
           ), () {
-        if (mounted & !timerset)
+        if (mounted & !timerset) {
           setState(() {
             opacity = 1;
             timerset = true;
           });
+        }
       });
       Timer(Duration(milliseconds: widget.duration.inMilliseconds - 200), () {
-        if (mounted)
+        if (mounted) {
           setState(() {
             opacity = 0;
           });
+        }
       });
     }
     return Positioned(
@@ -145,7 +147,7 @@ class _ToastWidgetState extends State<ToastWidget> {
       child: AnimatedOpacity(
         opacity: opacity,
         curve: Curves.linear,
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         child: Material(
           color: Colors.transparent,
           child: widget.widget,

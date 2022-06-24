@@ -1,5 +1,8 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
@@ -7,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../../models/models.dart';
 
-import 'chatBubble.dart';
+import 'chat_bubble.dart';
 import '../widgets.dart';
 
 class ChatMessage extends StatefulWidget {
@@ -28,7 +31,7 @@ class ChatMessage extends StatefulWidget {
 
   final List<PapercupsMessage>? msgs;
   final int index;
-  final Props props;
+  final PapercupsProps props;
   final bool sending;
   final double maxWidth;
   final String locale;
@@ -39,7 +42,7 @@ class ChatMessage extends StatefulWidget {
   final void Function(PapercupsMessage)? onMessageBubbleTap;
 
   @override
-  _ChatMessageState createState() => _ChatMessageState();
+  State<ChatMessage> createState() => _ChatMessageState();
 }
 
 class _ChatMessageState extends State<ChatMessage> {
@@ -53,7 +56,7 @@ class _ChatMessageState extends State<ChatMessage> {
 
   @override
   void dispose() {
-    if (timer != null) timer!.cancel();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -66,16 +69,18 @@ class _ChatMessageState extends State<ChatMessage> {
   TimeOfDay senderTime = TimeOfDay.now();
   @override
   Widget build(BuildContext context) {
-    if (opacity == 0)
+    if (opacity == 0) {
       Timer(
-          Duration(
+          const Duration(
             milliseconds: 0,
           ), () {
-        if (mounted)
+        if (mounted) {
           setState(() {
             opacity = 1;
           });
+        }
       });
+    }
     var msg = widget.msgs![widget.index];
 
     bool userSent = true;
@@ -93,56 +98,57 @@ class _ChatMessageState extends State<ChatMessage> {
       try {
         longDay = DateFormat.yMMMMd(widget.locale).format(nextMsg.sentAt!);
       } catch (e) {
-        print("ERROR: Error generating localized date!");
-        longDay = "Loading...";
+        if (kDebugMode) {
+          print("ERROR: Error generating localized date!");
+        }
+        longDay = widget.props.translations.loadingText;
       }
     }
     if (userSent && isLast && widget.timeagoLocale != null) {
       timeago.setLocaleMessages(widget.locale, widget.timeagoLocale);
       timeago.setDefaultLocale(widget.locale);
     }
-    if (isLast && userSent && timer == null)
-      timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    if (isLast && userSent && timer == null) {
+      timer = Timer.periodic(const Duration(minutes: 1), (timer) {
         if (mounted && timer.isActive) {
           setState(() {});
         }
       });
+    }
     if (!isLast && timer != null) timer!.cancel();
     return GestureDetector(
       onTap: () async {
-        setState(() {
-          isTimeSentVisible = true;
-        });
-        if (widget.onMessageBubbleTap != null) widget.onMessageBubbleTap!(msg);
+        setState(() => isTimeSentVisible = true);
+        widget.onMessageBubbleTap?.call(msg);
       },
       onLongPress: () {
         HapticFeedback.vibrate();
         final data = ClipboardData(text: text);
         Clipboard.setData(data);
-        // TODO: Internationalize this
         Alert.show(
-          "Text copied to clipboard",
+          widget.props.translations.textCopiedText,
           context,
-          textStyle: Theme.of(context).textTheme.bodyText2,
-          backgroundColor: Theme.of(context).bottomAppBarColor,
+          textStyle: widget.props.style.chatCopiedTextAlertTextStyle ?? Theme.of(context).textTheme.bodyText2,
+          backgroundColor: widget.props.style.chatCopiedTextAlertBackgroundColor ?? Theme.of(context).bottomAppBarColor,
           gravity: Alert.bottom,
           duration: Alert.lengthLong,
         );
       },
       onTapUp: (_) {
         Timer(
-            Duration(
+            const Duration(
               seconds: 10,
             ), () {
-          if (mounted)
+          if (mounted) {
             setState(() {
               isTimeSentVisible = false;
             });
+          }
         });
       },
       child: AnimatedOpacity(
         curve: Curves.easeIn,
-        duration: Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 300),
         opacity: opacity,
         child: ChatBubble(
           userSent: userSent,
@@ -155,7 +161,7 @@ class _ChatMessageState extends State<ChatMessage> {
           maxWidth: maxWidth,
           text: text,
           longDay: longDay,
-          conatinsAttachment: containsAttachment,
+          containsAttachment: containsAttachment,
         ),
       ),
     );

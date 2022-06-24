@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:papercups_flutter/models/models.dart';
-import 'package:papercups_flutter/utils/colorMod.dart';
+import 'package:papercups_flutter/utils/color_mod.dart';
 import 'package:papercups_flutter/widgets/chat/attachment.dart';
-import 'package:papercups_flutter/widgets/chat/timeWidget.dart';
+import 'package:papercups_flutter/widgets/chat/time_widget.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import 'chatMessage.dart';
+import 'chat_message.dart';
 
 class ChatBubble extends StatelessWidget {
   const ChatBubble({
@@ -21,7 +21,7 @@ class ChatBubble extends StatelessWidget {
     required this.maxWidth,
     required this.text,
     required this.longDay,
-    required this.conatinsAttachment,
+    required this.containsAttachment,
   }) : super(key: key);
 
   final bool userSent;
@@ -34,7 +34,7 @@ class ChatBubble extends StatelessWidget {
   final double maxWidth;
   final String text;
   final String? longDay;
-  final bool conatinsAttachment;
+  final bool containsAttachment;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,6 @@ class ChatBubble extends StatelessWidget {
         Row(
           mainAxisAlignment:
               userSent ? MainAxisAlignment.end : MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (!userSent)
@@ -52,7 +51,7 @@ class ChatBubble extends StatelessWidget {
                 padding: EdgeInsets.only(
                   right: 14,
                   left: 14,
-                  top: (isFirst) ? 15 : 4,
+                  top: isFirst ? 15 : 4,
                   bottom: 5,
                 ),
                 child: (widget.msgs!.length == 1 ||
@@ -60,19 +59,19 @@ class ChatBubble extends StatelessWidget {
                         isLast)
                     ? Container(
                         decoration: BoxDecoration(
-                          color: widget.props.primaryColor,
-                          gradient: widget.props.primaryGradient,
+                          color: widget.props.style.primaryColor,
+                          gradient: widget.props.style.primaryGradient,
                           shape: BoxShape.circle,
                         ),
                         child: CircleAvatar(
                           radius: 16,
                           backgroundColor: Colors.transparent,
-                          backgroundImage: (msg.user!.profilePhotoUrl != null)
+                          backgroundImage: (msg.user?.profilePhotoUrl != null)
                               ? NetworkImage(msg.user!.profilePhotoUrl!)
                               : null,
-                          child: (msg.user!.profilePhotoUrl != null)
+                          child: (msg.user?.profilePhotoUrl != null)
                               ? null
-                              : (msg.user != null && msg.user!.fullName == null)
+                              : (msg.user?.displayName == null)
                                   ? Text(
                                       msg.user!.email!
                                           .substring(0, 1)
@@ -80,38 +79,46 @@ class ChatBubble extends StatelessWidget {
                                       style: TextStyle(color: widget.textColor),
                                     )
                                   : Text(
-                                      msg.user!.fullName!
+                                      msg.user!.displayName!
                                           .substring(0, 1)
                                           .toUpperCase(),
                                       style: TextStyle(color: widget.textColor),
                                     ),
                         ),
                       )
-                    : SizedBox(
-                        width: 32,
-                      ),
+                    : const SizedBox(width: 32),
               ),
             if (userSent)
               TimeWidget(
                 userSent: userSent,
                 msg: msg,
                 isVisible: isTimeSentVisible,
+                textStyle: widget.props.style.chatBubbleTimeTextStyle,
               ),
             Container(
-              decoration: BoxDecoration(
-                color: userSent
-                    ? widget.props.primaryColor
-                    : Theme.of(context).brightness == Brightness.light
-                        ? brighten(Theme.of(context).disabledColor, 80)
-                        : Color(0xff282828),
-                gradient: userSent ? widget.props.primaryGradient : null,
-                borderRadius: BorderRadius.circular(4),
-              ),
+              decoration: userSent &&
+                      widget.props.style.userBubbleBoxDecoration != null
+                  ? widget.props.style.userBubbleBoxDecoration
+                  : !userSent &&
+                          widget.props.style.botBubbleBoxDecoration != null
+                      ? widget.props.style.botBubbleBoxDecoration
+                      : BoxDecoration(
+                          color: userSent
+                              ? widget.props.style.primaryColor
+                              : Theme.of(context).brightness == Brightness.light
+                                  ? brighten(
+                                      Theme.of(context).disabledColor, 80)
+                                  : const Color(0xff282828),
+                          gradient: userSent
+                              ? widget.props.style.primaryGradient
+                              : null,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
               constraints: BoxConstraints(
                 maxWidth: maxWidth,
               ),
               margin: EdgeInsets.only(
-                top: (isFirst) ? 15 : 4,
+                top: isFirst ? 15 : 4,
                 bottom: 4,
                 right: userSent ? 18 : 0,
               ),
@@ -122,35 +129,46 @@ class ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (conatinsAttachment)
+                  if (containsAttachment)
                     ...msg.attachments!.map((e) {
                       return Attachment(
                         userSent: userSent,
                         props: widget.props,
-                        fileName: e.fileName ?? "No Name",
+                        fileName: e.fileName ??
+                            widget.props.translations.attachmentNamePlaceholder,
                         textColor: widget.textColor,
                         msgHasText:
-                            (msg.attachments!.length > 1 || msg.body != null),
+                            msg.attachments!.length > 1 || msg.body != null,
                         attachment: e,
                       );
                     }).toList(),
-                  if (msg.body != "null")
+                  if (msg.body != 'null')
                     MarkdownBody(
                       data: text,
                       styleSheet: MarkdownStyleSheet(
-                          blockquote:
-                              TextStyle(decoration: TextDecoration.underline),
-                          p: TextStyle(
-                            color: userSent
-                                ? widget.textColor
-                                : Theme.of(context).textTheme.bodyText1!.color,
-                          ),
+                          blockquote: const TextStyle(
+                              decoration: TextDecoration.underline),
+                          p: userSent &&
+                                  widget.props.style.userBubbleTextStyle != null
+                              ? widget.props.style.userBubbleTextStyle
+                              : !userSent &&
+                                      widget.props.style.botBubbleTextStyle !=
+                                          null
+                                  ? widget.props.style.botBubbleTextStyle
+                                  : TextStyle(
+                                      color: userSent
+                                          ? widget.textColor
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              ?.color,
+                                    ),
                           a: TextStyle(
                             color: userSent
                                 ? Colors.white
                                 : Theme.of(context).textTheme.bodyText1!.color,
                           ),
-                          blockquotePadding: EdgeInsets.only(bottom: 2),
+                          blockquotePadding: const EdgeInsets.only(bottom: 2),
                           blockquoteDecoration: BoxDecoration(
                             border: Border(
                               bottom: BorderSide(
@@ -180,27 +198,39 @@ class ChatBubble extends StatelessWidget {
                 userSent: userSent,
                 msg: msg,
                 isVisible: isTimeSentVisible,
+                textStyle: widget.props.style.chatBubbleTimeTextStyle,
               ),
           ],
         ),
-        if (!userSent && ((nextMsg.userId != msg.userId) || (isLast)))
+        if (!userSent && ((nextMsg.userId != msg.userId) || isLast))
           Padding(
-              padding: EdgeInsets.only(left: 16, bottom: 5, top: 4),
-              child: (msg.user!.fullName == null)
-                  ? Text(
-                      msg.user!.email!,
-                      style: TextStyle(
-                        color: Theme.of(context).disabledColor.withOpacity(0.5),
-                        fontSize: 14,
-                      ),
-                    )
-                  : Text(
-                      msg.user!.fullName!,
-                      style: TextStyle(
-                        color: Theme.of(context).disabledColor.withOpacity(0.5),
-                        fontSize: 14,
-                      ),
-                    )),
+            padding: const EdgeInsets.only(left: 16, bottom: 5, top: 4),
+            child: (msg.user!.displayName == null)
+                ? Text(
+                    msg.user!.email!,
+                    style: widget.props.style.botBubbleUsernameTextStyle ??
+                        TextStyle(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              ?.color
+                              ?.withOpacity(0.5),
+                          fontSize: 14,
+                        ),
+                  )
+                : Text(
+                    msg.user!.displayName!,
+                    style: widget.props.style.botBubbleUsernameTextStyle ??
+                        TextStyle(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              ?.color
+                              ?.withOpacity(0.5),
+                          fontSize: 14,
+                        ),
+                  ),
+          ),
         if (userSent && isLast)
           Container(
             width: double.infinity,
@@ -212,27 +242,28 @@ class ChatBubble extends StatelessWidget {
             child: Text(
               widget.sending
                   ? widget.sendingText
-                  : "${widget.sentText} ${timeago.format(msg.createdAt!)}",
+                  : '${widget.sentText} ${timeago.format(msg.createdAt!)}',
               textAlign: TextAlign.end,
-              style: TextStyle(color: Colors.grey),
+              style: widget.props.style.userBubbleSentAtTextStyle ??
+                  const TextStyle(color: Colors.grey),
             ),
           ),
         if (isLast || nextMsg.userId != msg.userId)
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
         if (longDay != null)
           IgnorePointer(
-            ignoring: true,
             child: Container(
-              margin: EdgeInsets.all(15),
+              margin: const EdgeInsets.all(15),
               width: double.infinity,
               child: Text(
                 longDay!,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
+                style: widget.props.style.chatBubbleFullDateTextStyle ??
+                    const TextStyle(
+                      color: Colors.grey,
+                    ),
               ),
             ),
           ),
