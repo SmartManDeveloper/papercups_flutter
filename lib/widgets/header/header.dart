@@ -9,20 +9,22 @@ class Header extends StatelessWidget {
     Key? key,
     required this.props,
     this.closeAction,
+    required this.textColor,
   }) : super(key: key);
 
-  final Props props;
-  final Function? closeAction;
+  final PapercupsProps props;
+  final VoidCallback? closeAction;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: props.headerPadding,
+      padding: props.style.headerPadding,
       width: double.infinity,
-      height: props.headerHeight,
+      height: props.style.headerHeight,
       decoration: BoxDecoration(
-          color: props.primaryColor,
-          gradient: props.primaryGradient,
+          color: props.style.primaryColor,
+          gradient: props.style.primaryGradient,
           boxShadow: [
             BoxShadow(
               blurRadius: 5,
@@ -38,15 +40,21 @@ class Header extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: Text(props.title,
-                    style: props.titleStyle, textAlign: props.titleAlign),
+                child: Text(props.translations.title,
+                    style: props.style.titleStyle ??
+                        TextStyle(
+                          color: textColor,
+                          fontSize: 21,
+                          fontWeight: FontWeight.w600,
+                        ),
+                    textAlign: props.style.titleAlign),
               ),
               if (closeAction != null)
                 IconButton(
-                  constraints: BoxConstraints(maxHeight: 21),
+                  constraints: const BoxConstraints(maxHeight: 21),
                   icon: props.closeIcon,
-                  onPressed: closeAction as void Function()?,
-                  color: props.titleStyle.color,
+                  onPressed: closeAction,
+                  color: props.style.titleStyle?.color ?? textColor,
                   padding: EdgeInsets.zero,
                   iconSize: 21,
                   splashRadius: 20,
@@ -58,10 +66,11 @@ class Header extends StatelessWidget {
           ),
           Flexible(
             child: Text(
-              props.subtitle,
-              style: props.subtitleStyle ??
+              props.translations.subtitle,
+              style: props.style.subtitleStyle ??
                   TextStyle(
-                    color: props.titleStyle.color?.withOpacity(0.8),
+                    color: (props.style.titleStyle?.color ?? textColor)
+                        .withOpacity(0.8),
                   ),
             ),
           )

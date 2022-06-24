@@ -1,3 +1,62 @@
+## [3.1.0] - 29/05/2022
+
+- Fix build issues related to platform 3.0.0
+- Stop using private types in public APIs
+- Fix example
+- Update dependencies
+
+## [3.0.1+1] - 28/05/2022
+
+- Fix RequireEmailUpfront key constructor
+
+## [3.0.1] - 28/05/2022
+- Apply flutter lints
+- Formatting and applying conventions
+
+## [3.0.0] - 28/05/2022
+This new version brings full internationalization support along with file upload and unlimited chat appearance customization. This is a breaking release due to the introduction of the `PapercupsIntl()` and `PapercupsStyle()` classes.
+
+A HUGE thank you to all of the contributors in this release. It is great to see new people contributing features. To the rest, thank you for your patience, here's the new release!
+
+### ✨ New Features
+
+- New file upload functionality by @ryg-git (w/ improvements by @aguilaair)
+- Performance improvements
+- Add title style and alignment by @marwenbk
+- Implement theming `PapercupStyle()` by @marwenbk
+
+### 🐛Bug Fixes
+
+- Fixed "Last seen" variable by @jonatascm
+- Fix CustomerMetadata otherMetadata not being saved by @CharlesMangwa
+
+### 💥 Breaking changes
+
+- New `PapercupsIntl()`  and `PapercupsStyle()` classes for customizing the papercups, check README.md for migration guide. By @CharlesMangwa
+
+## New Contributors
+
+* @ryg-git made their first contribution in <https://github.com/papercups-io/papercups_flutter/pull/66>
+- @jonatascm made their first contribution in <https://github.com/papercups-io/papercups_flutter/pull/68>
+- @marwenbk made their first contribution in <https://github.com/papercups-io/papercups_flutter/pull/74>
+- @CharlesMangwa made their first contribution in <https://github.com/papercups-io/papercups_flutter/pull/77>
+- @dependabot made their first contribution in <https://github.com/papercups-io/papercups_flutter/pull/80>
+
+**Full Changelog**: <https://github.com/papercups-io/papercups_flutter/compare/2.1.4...3.0.0>
+
+## [3.0.0-beta.1] - 08/01/2022.
+This new version brings full internationalization support along with file upload. This is a breaking release due to the introduction of the `PapercupsIntl()` class.
+### ✨ New Features
+- New file upload functionality by (@ryg-git)[https://github.com/ryg-git]
+- Performance improvements 
+- Add title style and alignment by (@marwenbk)[http://github.com/marwenbk] 
+
+### 🐛Bug Fixes
+- Fixed "Last seen" variable by (@jonatascm)[http://github.com/jonatascm] 
+
+### 💥 Breaking changes
+- New `PapercupsIntl()` class for customizing the papercups, check README.md for migration guide. By (@CharlesMangwa)[https://github.com/CharlesMangwa]
+
 ## [2.1.4] - 12/09/2021.
 🐛 Fixed an issue where new customer conversations would create a new ID, stopping links between conversations.
 
@@ -36,11 +95,11 @@ These releases are maintenance related, addressing some issues found on pub.dev 
 ## [2.0.0] - 16/02/2021.
 
 # 🎉 2.0 has landed!
-This release brings major changes to how this package works. Most importantly, it is now completely native, ensuring speed and performace along with more customisability. This will also enable new features such as chat message notifications, in-app overlays, local message retention and many others, make sure to leave suggestions [here](https://github.com/papercups-io/papercups_flutter) for what to build next.
+This release brings major changes to how this package works. Most importantly, it is now completely native, ensuring speed and performance along with more customisability. This will also enable new features such as chat message notifications, in-app overlays, local message retention and many others, make sure to leave suggestions [here](https://github.com/papercups-io/papercups_flutter) for what to build next.
 
 ### New Features
 * Native Dart implementation!
-* Full themeing control w/gradients.
+* Full theming control w/gradients.
 * Full Internationalization control - every part can be set to any language.
 * Dark mode
 * Added elevation option to message box
@@ -71,7 +130,7 @@ Thanks to [@Fiyiin](https://github.com/Fiyiin) for helping me out building this 
 
 ## [0.2.2] - 30/11/2020.
 
-* ⚡️ Performance imporvements to `genIframeUrl`
+* ⚡️ Performance improvements to `genIframeUrl`
 * ✨ Added `toMap()` and `toJsonString()` to the classes, better URI generation.
 
 ## [0.2.1] - 26/11/2020.
@@ -85,7 +144,7 @@ Thanks to [@Fiyiin](https://github.com/Fiyiin) for helping me out building this 
 
 ### Enhancements
 * 📝 Improved docs with higher coverage and syntax highlighting (Thanks to @Immortalin).
-* ⚡️ Web widget is now constant. Better preformance.
+* ⚡️ Web widget is now constant. Better performance.
 * ✨ Update example to show new features.
 
 ## [0.1.4] - 23/11/2020.
@@ -94,7 +153,7 @@ Thanks to [@Fiyiin](https://github.com/Fiyiin) for helping me out building this 
 
 ## [0.1.3] - 23/11/2020.
 
-* 🐛 Add platfromView stub, should fix platfrom id and pub score
+* 🐛 Add platformView stub, should fix platform id and pub score
 
 ## [0.1.2] - 22/11/2020.
 

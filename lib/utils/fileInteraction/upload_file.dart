@@ -6,10 +6,10 @@ import 'dart:typed_data';
 import 'package:http/http.dart';
 import '../../models/models.dart';
 
-typedef void OnUploadProgressCallback(int sentBytes, int totalBytes);
+typedef OnUploadProgressCallback = void Function(int sentBytes, int totalBytes);
 
 Future<List<PapercupsAttachment>> uploadFile(
-  Props p, {
+  PapercupsProps p, {
   OnUploadProgressCallback? onUploadProgress,
   String? fileName,
   Uint8List? fileBytes,
@@ -17,7 +17,7 @@ Future<List<PapercupsAttachment>> uploadFile(
 }) async {
   List<PapercupsAttachment>? pa = [];
   try {
-    var uri = Uri.parse("https://" + p.baseUrl + "/api/upload");
+    var uri = Uri.parse("https://${p.baseUrl}/api/upload");
     final httpClient = HttpClient();
     final request = await httpClient.postUrl(uri);
     var client = MultipartRequest("POST", uri)
@@ -46,9 +46,7 @@ Future<List<PapercupsAttachment>> uploadFile(
 
             byteCount += data.length;
 
-            if (onUploadProgress != null) {
-              onUploadProgress(byteCount, totalByteLength);
-            }
+            onUploadProgress?.call(byteCount, totalByteLength);
           },
           handleError: (error, stack, sink) {
             throw error;
@@ -83,7 +81,7 @@ Future<List<PapercupsAttachment>> uploadFile(
     } else {
       final length = fileBytes!.length;
       client.files.add(
-        await MultipartFile(
+        MultipartFile(
           'file',
           ByteStream.fromBytes(fileBytes),
           length,
@@ -104,7 +102,7 @@ Future<List<PapercupsAttachment>> uploadFile(
       );
     }
   } catch (e) {
-    throw (e);
+    rethrow;
   }
   return pa;
 }

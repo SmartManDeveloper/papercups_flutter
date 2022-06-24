@@ -2,20 +2,20 @@ library papercups_flutter;
 
 // Imports.
 import 'package:flutter/material.dart';
-import 'utils/utils.dart';
-import 'widgets/widgets.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:phoenix_socket/phoenix_socket.dart';
 import 'models/models.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'utils/utils.dart';
+import 'widgets/widgets.dart';
 
 // Exports.
 export 'models/classes.dart';
 export 'package:timeago/timeago.dart';
 
 /// Returns the webview which contains the chat. To use it simply call PaperCupsWidget(), making sure to add the props!
-class PaperCupsWidget extends StatefulWidget {
+class PapercupsWidget extends StatefulWidget {
   /// Initialize the props that you will pass on PaperCupsWidget.
-  final Props props;
+  final PapercupsProps props;
 
   /// Locale for the date, use the locales from the `intl` package.
   /// For example `"es"` or `"en-UK"`.
@@ -24,72 +24,54 @@ class PaperCupsWidget extends StatefulWidget {
   /// Locale for the fuzzy timestamps. Check timeago locales. For example `EsMessages()`.
   /// Check https://github.com/andresaraujo/timeago.dart/tree/master/timeago/lib/src/messages
   /// for the available classes.
+  // ignore: prefer_typing_uninitialized_variables
   final timeagoLocale;
 
-  /// Text to show while message is sending. Default `"Sending..."`
-  final String sendingText;
-
-  /// Text to show when the messgae is sent. Default is `"Sent"` time will be added after.
-  final String sentText;
-
-  /// If not null, close button will be shown.
-  final Function? closeAction;
-
-  /// Set to true in order to make the send message section float
-  final bool floatingSendMessage;
-
-  /// Function to handle message bubble tap action
-  final void Function(PapercupsMessage)? onMessageBubbleTap;
-
-  PaperCupsWidget({
+  const PapercupsWidget({
+    Key? key,
     required this.props,
     this.dateLocale = "en-US",
     this.timeagoLocale,
-    this.sendingText = "Sending...",
-    this.sentText = "Sent",
-    this.closeAction,
-    this.floatingSendMessage = false,
-    this.onMessageBubbleTap,
-  });
+  }) : super(key: key);
 
   @override
-  _PaperCupsWidgetState createState() => _PaperCupsWidgetState();
+  State<PapercupsWidget> createState() => _PapercupsWidgetState();
 }
 
-class _PaperCupsWidgetState extends State<PaperCupsWidget> {
+class _PapercupsWidgetState extends State<PapercupsWidget> {
   bool _connected = false;
   PhoenixSocket? _socket;
   PhoenixChannel? _channel;
   PhoenixChannel? _conversationChannel;
   PapercupsCustomer? _customer;
-  bool _canJoinConversation = false;
+  final bool _canJoinConversation = false;
   Conversation _conversation = Conversation(messages: []);
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool _sending = false;
   bool noConnection = false;
   Color textColor = Colors.white;
 
   @override
   void dispose() {
-    if (_channel != null) _channel!.close();
-    if (_conversationChannel != null) _conversationChannel!.close();
-    if (_socket != null) _socket!.dispose();
+    _channel?.close();
+    _conversationChannel?.close();
+    _socket?.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   void didChangeDependencies() {
-    if (widget.props.greeting != null &&
+    if (widget.props.translations.greeting != null &&
         _conversation.messages.indexWhere((element) => element.id == "greeting") == -1) {
       _conversation.messages.add(
         PapercupsMessage(
-          body: widget.props.greeting,
+          body: widget.props.translations.greeting,
           sentAt: DateTime.now(),
           createdAt: DateTime.now(),
           accountId: widget.props.accountId,
           user: User(
-            fullName: widget.props.companyName,
+            displayName: widget.props.translations.companyName,
           ),
           userId: 0,
           id: "greeting",
@@ -97,12 +79,11 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
       );
     }
     if (_socket == null) {
-      _socket = PhoenixSocket("wss://" + widget.props.baseUrl + '/socket/websocket')..connect();
+      _socket = PhoenixSocket("wss://${widget.props.baseUrl}/socket/websocket")..connect();
       _subscribeToSocket();
     }
-    if (widget.props.customer != null &&
-        widget.props.customer!.externalId != null &&
-        (_customer == null || _customer!.createdAt == null) &&
+    if (widget.props.customer?.externalId != null &&
+        _customer?.createdAt == null &&
         _conversation.id == null &&
         _conversation.messages.length <= 1) {
       getCustomerHistory(
@@ -116,12 +97,12 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
         props: widget.props,
       ).then((failed) {
         if (failed) {
-          // TODO: Internationalize this
           Alert.show(
-            "There was an issue retrieving your details. Please try again!",
+            widget.props.translations.historyFetchErrorText,
             context,
-            backgroundColor: Theme.of(context).bottomAppBarColor,
-            textStyle: Theme.of(context).textTheme.bodyText2,
+            textStyle: widget.props.style.chatNoConnectionAlertTextStyle ?? Theme.of(context).textTheme.bodyText2,
+            backgroundColor:
+                widget.props.style.chatNoConnectionAlertBackgroundColor ?? Theme.of(context).bottomAppBarColor,
             gravity: Alert.bottom,
             duration: Alert.lengthLong,
           );
@@ -131,14 +112,19 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
         }
       });
     }
-    if ((widget.props.primaryColor != null && widget.props.primaryColor!.computeLuminance() > 0.5) ||
-        (widget.props.primaryGradient != null && widget.props.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
-        (widget.props.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5))
+    if ((widget.props.style.primaryColor != null && widget.props.style.primaryColor!.computeLuminance() > 0.5) ||
+        (widget.props.style.primaryGradient != null &&
+            widget.props.style.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
+        (widget.props.style.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5)) {
       textColor = Colors.black;
-    if (widget.props.baseUrl.contains("http")) throw "Do not provide a protocol in baseURL";
+    }
+    if (widget.props.baseUrl.contains("http")) {
+      throw "Do not provide a protocol in baseURL";
+    }
     if (widget.props.baseUrl.endsWith("/")) throw "Do not provide a trailing /";
-    if (widget.props.primaryGradient != null && widget.props.primaryColor != null)
+    if (widget.props.style.primaryGradient != null && widget.props.style.primaryColor != null) {
       throw "Expected either primaryColor or primaryGradient to be null";
+    }
     if (widget.props.customer != null) {
       setCustomer(PapercupsCustomer(
         email: widget.props.customer!.email,
@@ -155,12 +141,13 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
   }
 
   @override
-  void didUpdateWidget(PaperCupsWidget oldWidget) {
+  void didUpdateWidget(PapercupsWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.props.primaryColor != widget.props.primaryColor) {
-      if ((widget.props.primaryColor != null && widget.props.primaryColor!.computeLuminance() > 0.5) ||
-          (widget.props.primaryGradient != null && widget.props.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
-          (widget.props.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5)) {
+    if (oldWidget.props.style.primaryColor != widget.props.style.primaryColor) {
+      if ((widget.props.style.primaryColor != null && widget.props.style.primaryColor!.computeLuminance() > 0.5) ||
+          (widget.props.style.primaryGradient != null &&
+              widget.props.style.primaryGradient!.colors[0].computeLuminance() > 0.5) ||
+          (widget.props.style.primaryColor == null && Theme.of(context).primaryColor.computeLuminance() > 0.5)) {
         textColor = Colors.black;
       } else {
         textColor = Colors.white;
@@ -183,15 +170,23 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
     _conversationChannel = c;
   }
 
+  /// This allows a value of type T or T?
+  /// to be treated as a value of type T?.
+  ///
+  /// We use this so that APIs that have become
+  /// non-nullable can still be used with `!` and `?`
+  /// to support older versions of the API as well.
+  T? _ambiguate<T>(T? value) => value;
+
   void rebuild(void Function() fn, {bool stateMsg = false, animate = false}) {
     _sending = stateMsg;
     if (mounted) setState(fn);
     if (animate && mounted && _conversation.messages.isNotEmpty && _controller.hasClients) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) {
         _controller.animateTo(
           _controller.position.maxScrollExtent,
           curve: Curves.easeIn,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         );
       });
     }
@@ -207,37 +202,34 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
       _canJoinConversation,
       rebuild,
     );
-    if (widget.props.primaryColor == null && widget.props.primaryGradient == null)
-      widget.props.primaryColor = Theme.of(context).primaryColor;
     return Container(
-      color: Theme.of(context).canvasColor,
+      color: widget.props.style.backgroundColor ?? Theme.of(context).canvasColor,
       child: noConnection
           ? Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.wifi_off_rounded,
-                    size: 100,
-                    color: Colors.grey,
-                  ),
+                  widget.props.style.noConnectionIcon ??
+                      const Icon(
+                        Icons.wifi_off_rounded,
+                        size: 100,
+                        color: Colors.grey,
+                      ),
                   Text(
-                    "No Connection",
-                    style: Theme.of(context).textTheme.headline5!.copyWith(
-                          color: Colors.grey,
-                        ),
+                    widget.props.translations.noConnectionText,
+                    style: widget.props.style.noConnectionTextStyle ??
+                        Theme.of(context).textTheme.headline5?.copyWith(color: Colors.grey),
                   ),
                   TextButton.icon(
                     onPressed: () {
                       if (!_socket!.isConnected) {
                         _socket!.dispose();
-                        _socket = PhoenixSocket("wss://" + widget.props.baseUrl + '/socket/websocket')..connect();
+                        _socket = PhoenixSocket("wss://${widget.props.baseUrl}/socket/websocket")..connect();
                         _subscribeToSocket();
                       }
-                      if (widget.props.customer != null &&
-                          widget.props.customer!.externalId != null &&
+                      if (widget.props.customer?.externalId != null &&
                           (_customer == null || _customer!.createdAt == null) &&
-                          _conversation.id == null)
+                          _conversation.id == null) {
                         getCustomerHistory(
                           conversationChannel: _conversationChannel,
                           c: _customer,
@@ -250,15 +242,13 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
                         ).then((failed) {
                           if (!failed) {
                             _socket!.connect();
-                            if (mounted)
-                              setState(() {
-                                noConnection = false;
-                              });
+                            if (mounted) setState(() => noConnection = false);
                           }
                         });
+                      }
                     },
-                    icon: Icon(Icons.refresh_rounded),
-                    label: Text("Retry"),
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(widget.props.translations.retryButtonLabel),
                   )
                 ],
               ),
@@ -269,7 +259,8 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
               children: [
                 Header(
                   props: widget.props,
-                  closeAction: widget.closeAction,
+                  closeAction: widget.props.closeAction,
+                  textColor: textColor,
                 ),
                 // if (widget.props.showAgentAvailability)
                 //   AgentAvailability(widget.props),
@@ -281,33 +272,37 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
                     _sending,
                     widget.dateLocale,
                     widget.timeagoLocale,
-                    widget.sendingText,
-                    widget.sentText,
+                    widget.props.translations.sendingText,
+                    widget.props.translations.sentText,
                     textColor,
-                    widget.onMessageBubbleTap,
+                    widget.props.onMessageBubbleTap,
                   ),
                 ),
-                if (!widget.floatingSendMessage) PoweredBy(),
+                if (!widget.props.floatingSendMessage) const PoweredBy(),
                 Container(
-                  margin: widget.floatingSendMessage
-                      ? EdgeInsets.only(
+                  margin: widget.props.floatingSendMessage
+                      ? const EdgeInsets.only(
                           right: 15,
                           left: 15,
                         )
                       : null,
-                  decoration: widget.floatingSendMessage
-                      ? BoxDecoration(borderRadius: BorderRadius.circular(10), boxShadow: [
-                          BoxShadow(
-                            blurRadius: 10,
-                            color: Theme.of(context).brightness == Brightness.light
-                                ? Colors.grey.withOpacity(0.4)
-                                : Colors.black.withOpacity(0.8),
+                  decoration: widget.props.floatingSendMessage
+                      ? widget.props.style.floatingSendMessageBoxDecoration ??
+                          BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 10,
+                                color: Theme.of(context).brightness == Brightness.light
+                                    ? Colors.grey.withOpacity(0.4)
+                                    : Colors.black.withOpacity(0.8),
+                              ),
+                            ],
                           )
-                        ])
-                      : BoxDecoration(),
-                  clipBehavior: widget.floatingSendMessage ? Clip.antiAlias : Clip.none,
+                      : const BoxDecoration(),
+                  clipBehavior: widget.props.floatingSendMessage ? Clip.antiAlias : Clip.none,
                   child: (widget.props.requireEmailUpfront && (_customer == null || _customer!.email == null))
-                      ? RequireEmailUpfront(setCustomer, widget.props, textColor, !widget.floatingSendMessage)
+                      ? RequireEmailUpfront(setCustomer, widget.props, textColor, !widget.props.floatingSendMessage)
                       : SendMessage(
                           props: widget.props,
                           customer: _customer,
@@ -321,12 +316,12 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
                           messages: _conversation.messages,
                           sending: _sending,
                           textColor: textColor,
-                          showDivider: !widget.floatingSendMessage,
+                          showDivider: !widget.props.floatingSendMessage,
                         ),
                 ),
-                if (widget.floatingSendMessage)
-                  Padding(
-                    padding: const EdgeInsets.all(4.0),
+                if (widget.props.floatingSendMessage)
+                  const Padding(
+                    padding: EdgeInsets.all(4.0),
                     child: PoweredBy(),
                   ),
               ],
@@ -336,11 +331,12 @@ class _PaperCupsWidgetState extends State<PaperCupsWidget> {
 
   void _subscribeToSocket() {
     _socket!.closeStream.listen((event) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _connected = false;
           noConnection = true;
         });
+      }
     });
 
     _socket!.openStream.listen(

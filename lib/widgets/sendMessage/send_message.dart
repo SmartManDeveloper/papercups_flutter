@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:papercups_flutter/utils/fileInteraction/nativeFilePicker.dart';
-import 'package:papercups_flutter/utils/fileInteraction/webFilePicker.dart';
+import 'package:papercups_flutter/utils/fileInteraction/native_file_picker.dart';
+import 'package:papercups_flutter/utils/fileInteraction/web_file_picker.dart';
 import '../../models/models.dart';
 import '../../utils/utils.dart';
 import 'package:phoenix_socket/phoenix_socket.dart';
@@ -14,7 +14,7 @@ import '../alert.dart';
 
 /// Send message text box.
 class SendMessage extends StatefulWidget {
-  SendMessage({
+  const SendMessage({
     Key? key,
     this.customer,
     this.setCustomer,
@@ -31,7 +31,7 @@ class SendMessage extends StatefulWidget {
     this.showDivider = true,
   }) : super(key: key);
 
-  final Props props;
+  final PapercupsProps props;
   final PapercupsCustomer? customer;
   final Function? setCustomer;
   final Function? setState;
@@ -46,7 +46,7 @@ class SendMessage extends StatefulWidget {
   final bool showDivider;
 
   @override
-  _SendMessageState createState() => _SendMessageState();
+  State<SendMessage> createState() => _SendMessageState();
 }
 
 class _SendMessageState extends State<SendMessage> {
@@ -100,12 +100,11 @@ class _SendMessageState extends State<SendMessage> {
         fileIds,
         true,
       );
-      // TODO: Internationalize this.
       Alert.show(
-        "Attachment uploaded",
+        widget.props.translations.attachmentUploadedText,
         context,
-        textStyle: Theme.of(context).textTheme.bodyText2,
-        backgroundColor: Theme.of(context).bottomAppBarColor,
+        textStyle: widget.props.style.chatUploadingAlertTextStyle ?? Theme.of(context).textTheme.bodyText2,
+        backgroundColor: widget.props.style.chatUploadingAlertBackgroundColor ?? Theme.of(context).bottomAppBarColor,
         gravity: Alert.bottom,
         duration: Alert.lengthLong,
       );
@@ -113,14 +112,13 @@ class _SendMessageState extends State<SendMessage> {
   }
 
 // TODO: Separate this widget
-// TODO: Internationalize alerts and popups
   Widget _getFilePicker() {
     if (kIsWeb) {
       return IconButton(
         splashRadius: 20,
         icon: Transform.rotate(
           angle: 0.6,
-          child: Icon(
+          child: const Icon(
             Icons.attach_file,
             size: 18,
           ),
@@ -136,7 +134,7 @@ class _SendMessageState extends State<SendMessage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         icon: Transform.rotate(
           angle: 0.6,
-          child: Icon(
+          child: const Icon(
             Icons.attach_file,
             size: 18,
           ),
@@ -152,30 +150,30 @@ class _SendMessageState extends State<SendMessage> {
             value: FileType.any,
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: widget.props.primaryColor,
+                backgroundColor: widget.props.style.primaryColor,
                 foregroundColor: widget.textColor,
-                child: Icon(Icons.insert_drive_file_outlined),
+                child: const Icon(Icons.insert_drive_file_outlined),
               ),
-              title: Text('File'),
-              contentPadding: EdgeInsets.all(0),
+              title: Text(widget.props.translations.fileText),
+              contentPadding: const EdgeInsets.all(0),
             ),
           ),
           PopupMenuItem<FileType>(
             value: FileType.image,
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: widget.props.primaryColor,
+                backgroundColor: widget.props.style.primaryColor,
                 foregroundColor: widget.textColor,
-                child: Icon(Icons.image_outlined),
+                child: const Icon(Icons.image_outlined),
               ),
-              title: Text('Image'),
-              contentPadding: EdgeInsets.all(0),
+              title: Text(widget.props.translations.imageText),
+              contentPadding: const EdgeInsets.all(0),
             ),
           ),
         ],
       );
     } else {
-      return SizedBox();
+      return const SizedBox();
     }
   }
 
@@ -183,32 +181,38 @@ class _SendMessageState extends State<SendMessage> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      constraints: BoxConstraints(
+      constraints: const BoxConstraints(
         minHeight: 55,
       ),
-      decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          border: widget.showDivider
-              ? Border(
-                  top: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                  ),
-                )
-              : null,
-          boxShadow: [BoxShadow(blurRadius: 30, color: Theme.of(context).shadowColor.withOpacity(0.1))]),
+      decoration: widget.props.style.sendMessageBoxDecoration ??
+          BoxDecoration(
+            color: Theme.of(context).cardColor,
+            border: widget.showDivider
+                ? Border(
+                    top: BorderSide(color: Theme.of(context).dividerColor),
+                  )
+                : null,
+            boxShadow: [
+              BoxShadow(
+                blurRadius: 30,
+                color: Theme.of(context).shadowColor.withOpacity(0.1),
+              )
+            ],
+          ),
       child: Padding(
         padding: const EdgeInsets.only(left: 15, right: 0),
         child: Row(
           children: [
             Expanded(
               child: TextField(
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: widget.props.newMessagePlaceholder,
-                  hintStyle: const TextStyle(
-                    fontSize: 14,
-                  ),
-                ),
+                keyboardAppearance: widget.props.style.sendMessageKeyboardAppearance,
+                style: widget.props.style.sendMessageInputTextStyle,
+                decoration: widget.props.style.sendMessagePlaceholderInputDecoration ??
+                    InputDecoration(
+                      border: InputBorder.none,
+                      hintText: widget.props.translations.newMessagePlaceholder,
+                      hintStyle: widget.props.style.sendMessagePlaceholderTextStyle,
+                    ),
                 onSubmitted: (_) => triggerSend(),
                 controller: _msgController,
                 focusNode: _msgFocusNode,
@@ -216,15 +220,15 @@ class _SendMessageState extends State<SendMessage> {
             ),
             _getFilePicker(),
             InkWell(
-                customBorder: CircleBorder(),
+                customBorder: const CircleBorder(),
                 onTap: triggerSend,
                 child: Container(
                   height: 36,
                   width: 36,
-                  margin: EdgeInsets.only(right: 8),
+                  margin: const EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
-                    color: widget.props.primaryColor,
-                    gradient: widget.props.primaryGradient,
+                    color: widget.props.style.primaryColor,
+                    gradient: widget.props.style.primaryGradient,
                     shape: BoxShape.circle,
                   ),
                   child: widget.props.sendIcon ??
@@ -246,7 +250,7 @@ void _sendMessage(
   FocusNode fn,
   TextEditingController tc,
   PapercupsCustomer? cu,
-  Props p,
+  PapercupsProps p,
   Function? setCust,
   Conversation? conv,
   Function? setConv,
@@ -262,7 +266,7 @@ void _sendMessage(
 ]) {
   final text = tc.text;
   fn.requestFocus();
-  if (text.trim().isEmpty && fileIds == null) return null;
+  if (text.trim().isEmpty && fileIds == null) return;
   tc.clear();
   var timeNow = DateTime.now().toUtc();
 

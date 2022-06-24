@@ -1,19 +1,18 @@
 //Imports
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import '../../models/models.dart';
 import '../utils.dart';
 
 /// This function is used to get the past messages from the customer.
 Future<Map<String, dynamic>> getPastCustomerMessages(
-  Props p,
+  PapercupsProps p,
   PapercupsCustomer c, {
   Client? client,
 }) async {
-  if (client == null) {
-    client = Client();
-  }
+  client ??= Client();
   List<PapercupsMessage> rMsgs = [];
   PapercupsCustomer newCust;
 
@@ -55,12 +54,8 @@ Future<Map<String, dynamic>> getPastCustomerMessages(
                   email: val["user"]["email"],
                   id: val["user"]["id"],
                   role: val["user"]["role"],
-                  fullName: (val["user"]["full_name"] != null)
-                      ? val["user"]["full_name"]
-                      : null,
-                  profilePhotoUrl: (val["user"]["profile_photo_url"] != null)
-                      ? val["user"]["profile_photo_url"]
-                      : null,
+                  displayName: val["user"]["display_name"],
+                  profilePhotoUrl: val["user"]["profile_photo_url"],
                 )
               : null,
           attachments: (val["attachments"] != null)
@@ -74,9 +69,9 @@ Future<Map<String, dynamic>> getPastCustomerMessages(
                 }).toList()
               : null,
           fileIds: (val["attachments"] != null)
-              ? (val["attachments"] as List<dynamic>).map((attachment) {
-                  return attachment["id"] as String;
-                }).toList()
+              ? (val["attachments"] as List<dynamic>)
+                  .map((attachment) => attachment["id"] as String)
+                  .toList()
               : null,
         ),
       );
@@ -95,7 +90,9 @@ Future<Map<String, dynamic>> getPastCustomerMessages(
       phone: customerData["phone"],
     );
   } catch (e) {
-    print("An error ocurred while getting past customer data.");
+    if (kDebugMode) {
+      print("An error ocurred while getting past customer data.");
+    }
     return {
       "msgs": [],
       "cust": c,
