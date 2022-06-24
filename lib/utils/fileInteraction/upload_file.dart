@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:universal_io/io.dart';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -20,14 +21,31 @@ Future<List<PapercupsAttachment>> uploadFile(
     var uri = Uri.parse("https://${p.baseUrl}/api/upload");
     final httpClient = HttpClient();
     final request = await httpClient.postUrl(uri);
-    var client = MultipartRequest("POST", uri)
-      ..fields['account_id'] = p.accountId;
+    var client = MultipartRequest("POST", uri)..fields['account_id'] = p.accountId;
 
-    if (Platform.isAndroid ||
-        Platform.isIOS ||
-        Platform.isLinux ||
-        Platform.isMacOS ||
-        Platform.isWindows) {
+    if (kIsWeb) {
+      final length = fileBytes!.length;
+      client.files.add(
+        MultipartFile(
+          'file',
+          ByteStream.fromBytes(fileBytes),
+          length,
+          filename: fileName ?? '',
+        ),
+      );
+      var res = await client.send();
+      var charCodes = await res.stream.last;
+      var body = String.fromCharCodes(charCodes);
+      var data = jsonDecode(body)["data"];
+      pa.add(
+        PapercupsAttachment(
+          id: data["id"],
+          fileName: data["filename"],
+          fileUrl: data["file_url"],
+          contentType: data["content_type"],
+        ),
+      );
+    } else if (Platform.isAndroid || Platform.isIOS || Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
       client.files.add(await MultipartFile.fromPath('file', filePath ?? ''));
       var msStream = client.finalize();
       var totalByteLength = client.contentLength;
@@ -64,8 +82,7 @@ Future<List<PapercupsAttachment>> uploadFile(
       var statusCode = httpResponse.statusCode;
 
       if (statusCode ~/ 100 != 2) {
-        throw Exception(
-            'Error uploading file, Status code: ${httpResponse.statusCode}');
+        throw Exception('Error uploading file, Status code: ${httpResponse.statusCode}');
       } else {
         var body = await convertToString(httpResponse);
         var data = jsonDecode(body)["data"];
@@ -78,28 +95,6 @@ Future<List<PapercupsAttachment>> uploadFile(
           ),
         );
       }
-    } else {
-      final length = fileBytes!.length;
-      client.files.add(
-        MultipartFile(
-          'file',
-          ByteStream.fromBytes(fileBytes),
-          length,
-          filename: fileName ?? '',
-        ),
-      );
-      var res = await client.send();
-      var charCodes = await res.stream.last;
-      var body = String.fromCharCodes(charCodes);
-      var data = jsonDecode(body)["data"];
-      pa.add(
-        PapercupsAttachment(
-          id: data["id"],
-          fileName: data["filename"],
-          fileUrl: data["file_url"],
-          contentType: data["content_type"],
-        ),
-      );
     }
   } catch (e) {
     rethrow;
