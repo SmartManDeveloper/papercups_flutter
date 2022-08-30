@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:open_file/open_file.dart';
+import 'package:better_open_file/better_open_file.dart';
 import 'package:papercups_flutter/models/models.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:universal_io/io.dart';
@@ -44,10 +44,7 @@ Future<void> handleDownloadStream(
 
 Future<File> getAttachment(PapercupsAttachment attachment) async {
   String dir = (await getApplicationDocumentsDirectory()).path;
-  File? file = File(dir +
-      Platform.pathSeparator +
-      (attachment.id ?? "noId") +
-      (attachment.fileName ?? "noName"));
+  File? file = File(dir + Platform.pathSeparator + (attachment.id ?? "noId") + (attachment.fileName ?? "noName"));
   return file;
 }
 

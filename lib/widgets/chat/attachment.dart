@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:open_file/open_file.dart';
+import 'package:better_open_file/better_open_file.dart';
 import 'package:papercups_flutter/models/attachment.dart';
 import 'package:papercups_flutter/models/classes.dart';
 import 'package:papercups_flutter/utils/fileInteraction/download_file.dart';
@@ -67,8 +67,7 @@ class _AttachmentState extends State<Attachment> {
             OpenFile.open(file.absolute.path);
             downloaded = true;
           } else {
-            Stream<StreamedResponse> resp =
-                await downloadFile(widget.attachment.fileUrl ?? '');
+            Stream<StreamedResponse> resp = await downloadFile(widget.attachment.fileUrl ?? '');
             handleDownloadStream(resp, file: file, onDownloaded: () {
               downloaded = true;
               downloading = false;
@@ -83,11 +82,9 @@ class _AttachmentState extends State<Attachment> {
       },
       child: Container(
         width: double.infinity,
-        decoration: widget.userSent &&
-                widget.props.style.userAttachmentBoxDecoration != null
+        decoration: widget.userSent && widget.props.style.userAttachmentBoxDecoration != null
             ? widget.props.style.userAttachmentBoxDecoration
-            : !widget.userSent &&
-                    widget.props.style.botAttachmentBoxDecoration != null
+            : !widget.userSent && widget.props.style.botAttachmentBoxDecoration != null
                 ? widget.props.style.botAttachmentBoxDecoration
                 : BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
@@ -127,16 +124,12 @@ class _AttachmentState extends State<Attachment> {
             Expanded(
               child: Text(
                 widget.fileName,
-                style: widget.userSent &&
-                        widget.props.style.userAttachmentTextStyle != null
+                style: widget.userSent && widget.props.style.userAttachmentTextStyle != null
                     ? widget.props.style.userAttachmentTextStyle
-                    : !widget.userSent &&
-                            widget.props.style.botAttachmentTextStyle != null
+                    : !widget.userSent && widget.props.style.botAttachmentTextStyle != null
                         ? widget.props.style.botAttachmentTextStyle
                         : TextStyle(
-                            color: widget.userSent
-                                ? widget.textColor
-                                : Theme.of(context).textTheme.bodyText1?.color,
+                            color: widget.userSent ? widget.textColor : Theme.of(context).textTheme.bodyText1?.color,
                           ),
                 overflow: TextOverflow.ellipsis,
               ),
