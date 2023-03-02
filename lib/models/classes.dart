@@ -22,7 +22,7 @@ class PapercupsProps {
   final VoidCallback? closeAction;
 
   /// This allows you to choose if you want to show your status.
-  // final bool showAgentAvailability;
+  final bool showAgentAvailability;
 
   /// Whether or not to allow scrolling.
   final bool scrollEnabled;
@@ -46,6 +46,8 @@ class PapercupsProps {
   /// This contains all the texts that can be displayed by the widget.
   final PapercupsIntl translations;
 
+  final bool agentAvailable;
+
   // Class definition.
   const PapercupsProps({
     required this.accountId,
@@ -53,7 +55,7 @@ class PapercupsProps {
     this.customer,
     this.closeIcon = const Icon(Icons.close_rounded),
     this.closeAction,
-    //this.showAgentAvailability = false,
+    this.showAgentAvailability = false,
     this.scrollEnabled = true,
     this.floatingSendMessage = false,
     this.requireEmailUpfront = false,
@@ -61,6 +63,7 @@ class PapercupsProps {
     this.onMessageBubbleTap,
     this.style = const PapercupsStyle(),
     this.translations = const PapercupsIntl(),
+    this.agentAvailable = false,
   });
 }
 
@@ -336,21 +339,21 @@ class PapercupsIntl {
   final String imageText;
 
   /// This text will be shown if the showAgentAvailability is true and you are online.
-  //String agentAvailableText;
+  final String agentAvailableText;
 
   /// This text will be shown if the showAgentAvailability is true and you are offline.
-  //String agentUnavailableText;
+  final String agentUnavailableText;
 
   const PapercupsIntl({
     this.historyFetchErrorText =
         'There was an issue retrieving your details. Please try again!',
     this.attachmentUploadErrorText = 'Failed to upload attachment',
-    // this.agentUnavailableText  = "We're away at the moment.",
+    this.agentUnavailableText  = "We're away at the moment.",
     this.attachmentUploadedText = 'Attachment uploaded',
     this.textCopiedText = 'Text copied to clipboard',
     this.attachmentUploadingText = 'Uploading...',
     this.enterEmailPlaceholder = 'Enter your email',
-    // this.agentAvailableText = "We're available.",
+    this.agentAvailableText = "We're available.",
     this.newMessagePlaceholder = 'Start typing...',
     this.noConnectionText = 'No Connection',
     this.attachmentNamePlaceholder = 'No Name',

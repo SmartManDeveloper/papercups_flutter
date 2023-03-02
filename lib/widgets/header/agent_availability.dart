@@ -32,18 +32,18 @@ class AgentAvailability extends StatelessWidget {
         ],
       ),
       child: Row(
-        children: const [
-          CircleAvatar(
+        children: [
+          const CircleAvatar(
             radius: 4,
             backgroundColor: Color(0xfff0f0f0),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Flexible(
             child: Text(
-              "We're away at the moment.",
-              style: TextStyle(
+              props.agentAvailable ? props.translations.agentAvailableText : props.translations.agentUnavailableText,
+              style: const TextStyle(
                 color: Color(0xccffffff),
                 fontSize: 12,
               ),
