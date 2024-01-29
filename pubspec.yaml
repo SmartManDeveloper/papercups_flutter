@@ -9,16 +9,16 @@ dependencies:
   flutter:
     sdk: flutter
   phoenix_socket: 0.6.4
-  http: 1.1.2
+  http: 1.2.0
   universal_io: 2.2.2
   flutter_markdown: 0.6.18+3
-  timeago: 3.6.0
+  timeago: 3.6.1
   intl: 0.18.1 # ignore sdk
   file_picker: 6.1.1
   path_provider: 2.1.2
-  url_launcher: 6.2.3
+  url_launcher: 6.2.4
   #  open_file: ^3.2.1
-  better_open_file: 3.6.4
+  better_open_file: 3.6.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
