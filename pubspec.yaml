@@ -8,17 +8,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  phoenix_socket: 0.6.4
-  http: 1.2.0
+  phoenix_socket: 0.7.0
+  http: 1.2.1
   universal_io: 2.2.2
-  flutter_markdown: 0.6.18+3
+  flutter_markdown: 0.6.19
   timeago: 3.6.1
-  intl: 0.18.1 # ignore sdk
+  intl: 0.18.1 # ignore dart_date
   file_picker: 6.1.1
   path_provider: 2.1.2
   url_launcher: 6.2.4
-  #  open_file: ^3.2.1
   better_open_file: 3.6.5
+dependency_overrides: # http web dependency
+  web: 0.4.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
