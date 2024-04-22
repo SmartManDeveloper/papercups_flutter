@@ -8,22 +8,20 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  phoenix_socket: 0.7.0
+  phoenix_socket: 0.7.2
   http: 1.2.1
   universal_io: 2.2.2
-  flutter_markdown: 0.6.20+1
+  flutter_markdown: 0.7.1
   timeago: 3.6.1
-  intl: 0.18.1 # ignore dart_date
-  file_picker: 6.1.1
-  path_provider: 2.1.2
-  url_launcher: 6.2.5
+  intl: 0.18.1 # ignore from web sdk
+  file_picker: 8.0.2
+  path_provider: 2.1.3
+  url_launcher: 6.2.6
   better_open_file: 3.6.5
-dependency_overrides: # http web dependency
-  web: 0.4.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
   mockito: 5.4.4
-  build_runner: "2.4.8"
-  flutter_lints: 3.0.1
+  build_runner: "2.4.9"
+  flutter_lints: 3.0.2
 flutter:
