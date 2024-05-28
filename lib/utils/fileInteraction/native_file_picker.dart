@@ -22,10 +22,9 @@ void nativeFilePicker({
       Alert.show(
         widget.props.translations.attachmentUploadingText,
         context,
-        textStyle: widget.props.style.chatUploadingAlertTextStyle ??
-            Theme.of(context).textTheme.bodyText2,
-        backgroundColor: widget.props.style.chatUploadingAlertBackgroundColor ??
-            Theme.of(context).bottomAppBarColor,
+        textStyle: widget.props.style.chatUploadingAlertTextStyle ?? Theme.of(context).textTheme.bodyMedium,
+        backgroundColor:
+            widget.props.style.chatUploadingAlertBackgroundColor ?? Theme.of(context).bottomAppBarTheme.color!,
         gravity: Alert.bottom,
         duration: Alert.lengthLong,
       );
@@ -36,11 +35,9 @@ void nativeFilePicker({
           Alert.show(
             "${(sentBytes * 100 / totalBytes).toStringAsFixed(2)}% ${widget.props.translations.uploadedText}",
             context,
-            textStyle: widget.props.style.chatUploadingAlertTextStyle ??
-                Theme.of(context).textTheme.bodyText2,
+            textStyle: widget.props.style.chatUploadingAlertTextStyle ?? Theme.of(context).textTheme.bodyMedium,
             backgroundColor:
-                widget.props.style.chatUploadingAlertBackgroundColor ??
-                    Theme.of(context).bottomAppBarColor,
+                widget.props.style.chatUploadingAlertBackgroundColor ?? Theme.of(context).bottomAppBarTheme.color!,
             gravity: Alert.bottom,
             duration: Alert.lengthLong,
           );
@@ -53,10 +50,9 @@ void nativeFilePicker({
     Alert.show(
       widget.props.translations.attachmentUploadErrorText,
       context,
-      textStyle: widget.props.style.chatUploadErrorAlertTextStyle ??
-          Theme.of(context).textTheme.bodyText2,
-      backgroundColor: widget.props.style.chatUploadErrorAlertBackgroundColor ??
-          Theme.of(context).bottomAppBarColor,
+      textStyle: widget.props.style.chatUploadErrorAlertTextStyle ?? Theme.of(context).textTheme.bodyMedium,
+      backgroundColor:
+          widget.props.style.chatUploadErrorAlertBackgroundColor ?? Theme.of(context).bottomAppBarTheme.color!,
       gravity: Alert.bottom,
       duration: Alert.lengthLong,
     );
@@ -65,10 +61,9 @@ void nativeFilePicker({
     Alert.show(
       widget.props.translations.attachmentUploadErrorText,
       context,
-      textStyle: widget.props.style.chatUploadErrorAlertTextStyle ??
-          Theme.of(context).textTheme.bodyText2,
-      backgroundColor: widget.props.style.chatUploadErrorAlertBackgroundColor ??
-          Theme.of(context).bottomAppBarColor,
+      textStyle: widget.props.style.chatUploadErrorAlertTextStyle ?? Theme.of(context).textTheme.bodyMedium,
+      backgroundColor:
+          widget.props.style.chatUploadErrorAlertBackgroundColor ?? Theme.of(context).bottomAppBarTheme.color!,
       gravity: Alert.bottom,
       duration: Alert.lengthLong,
     );

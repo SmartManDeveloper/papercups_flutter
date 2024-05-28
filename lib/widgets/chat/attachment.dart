@@ -129,7 +129,7 @@ class _AttachmentState extends State<Attachment> {
                     : !widget.userSent && widget.props.style.botAttachmentTextStyle != null
                         ? widget.props.style.botAttachmentTextStyle
                         : TextStyle(
-                            color: widget.userSent ? widget.textColor : Theme.of(context).textTheme.bodyText1?.color,
+                            color: widget.userSent ? widget.textColor : Theme.of(context).textTheme.bodyLarge?.color,
                           ),
                 overflow: TextOverflow.ellipsis,
               ),

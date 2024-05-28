@@ -100,9 +100,9 @@ class _PapercupsWidgetState extends State<PapercupsWidget> {
           Alert.show(
             widget.props.translations.historyFetchErrorText,
             context,
-            textStyle: widget.props.style.chatNoConnectionAlertTextStyle ?? Theme.of(context).textTheme.bodyText2,
+            textStyle: widget.props.style.chatNoConnectionAlertTextStyle ?? Theme.of(context).textTheme.bodyMedium,
             backgroundColor:
-                widget.props.style.chatNoConnectionAlertBackgroundColor ?? Theme.of(context).bottomAppBarColor,
+                widget.props.style.chatNoConnectionAlertBackgroundColor ?? Theme.of(context).bottomAppBarTheme.color!,
             gravity: Alert.bottom,
             duration: Alert.lengthLong,
           );
@@ -218,7 +218,7 @@ class _PapercupsWidgetState extends State<PapercupsWidget> {
                   Text(
                     widget.props.translations.noConnectionText,
                     style: widget.props.style.noConnectionTextStyle ??
-                        Theme.of(context).textTheme.headline5?.copyWith(color: Colors.grey),
+                        Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.grey),
                   ),
                   TextButton.icon(
                     onPressed: () {

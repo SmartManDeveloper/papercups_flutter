@@ -27,11 +27,7 @@ class TimeWidget extends StatelessWidget {
           TimeOfDay.fromDateTime(msg.createdAt!).format(context),
           style: textStyle ??
               TextStyle(
-                color: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    ?.color
-                    ?.withAlpha(100),
+                color: Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(100),
                 fontSize: 10,
               ),
         ),
